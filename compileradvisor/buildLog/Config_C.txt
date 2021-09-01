@@ -1,0 +1,18 @@
+make -f nbproject/Makefile-Config_C.mk SUBPROJECTS= .clean-conf
+make[1]: Entering directory 'C:/Users/c08227/MPLABXProjects/PIC32MX_CA.X'
+rm -f  -r compileradvisor/build/Config_C/production
+rm -f  -r compileradvisor/dist/Config_C/production
+make[1]: Leaving directory 'C:/Users/c08227/MPLABXProjects/PIC32MX_CA.X'
+CLEAN SUCCESSFUL (total time: 454ms)
+make -f nbproject/Makefile-Config_C.mk SUBPROJECTS= .build-conf
+make[1]: Entering directory 'C:/Users/c08227/MPLABXProjects/PIC32MX_CA.X'
+make  -f nbproject/Makefile-Config_C.mk compileradvisor/dist/Config_C/production/PIC32MX_CA.X.production.hex
+make[2]: Entering directory 'C:/Users/c08227/MPLABXProjects/PIC32MX_CA.X'
+"C:\Program Files\Microchip\xc32\v3.01\bin\xc32-gcc.exe"    -g -x c -c -mprocessor=32MX795F512L  -O3 -fno-common -MP -MMD -MF "compileradvisor/build/Config_C/production/main.o.d" -o compileradvisor/build/Config_C/production/main.o main.c    -DXPRJ_Config_C=Config_C      -mdfp="C:/Program Files/Microchip/MPLABX/v5.50.06.4136/packs/Microchip/PIC32MX_DFP/1.5.260"  
+"C:\Program Files\Microchip\xc32\v3.01\bin\xc32-gcc.exe"   -mprocessor=32MX795F512L -O3 -o compileradvisor/dist/Config_C/production/PIC32MX_CA.X.production.elf compileradvisor/build/Config_C/production/main.o          -DXPRJ_Config_C=Config_C      -Wl,--defsym=__MPLAB_BUILD=1,--no-code-in-dinit,--no-dinit-in-serial-mem,-Map="compileradvisor/dist/Config_C/production/PIC32MX_CA.X.production.map",--memorysummary,compileradvisor/dist/Config_C/production/memoryfile.xml -mdfp="C:/Program Files/Microchip/MPLABX/v5.50.06.4136/packs/Microchip/PIC32MX_DFP/1.5.260"
+"C:\Program Files\Microchip\xc32\v3.01\bin"\\xc32-bin2hex compileradvisor/dist/Config_C/production/PIC32MX_CA.X.production.elf 
+make[2]: Leaving directory 'C:/Users/c08227/MPLABXProjects/PIC32MX_CA.X'
+make[1]: Leaving directory 'C:/Users/c08227/MPLABXProjects/PIC32MX_CA.X'
+
+Info: Loading file: ./C:/Program Files/Microchip/MPLABX/v5.50.06.4136/packs/Microchip/PIC32MX_DFP/1.5.260/xc32/32MX795F512L/p32MX795F512L.ld
+BUILD SUCCESSFUL (total time: 2s)

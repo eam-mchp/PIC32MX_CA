@@ -1,0 +1,170 @@
+<html>
+<head>
+<style>
+body {
+    line-height: 1.4;
+    font-family: 'Open Sans',sans-serif;
+    margin: 0px 20px 60px 20px;
+}
+h1 {
+	color: #ed2924;
+	font-size: 2.5em;
+    font-weight: 600;
+	margin: 20 0 30 0px;
+}
+h2  {
+	font-size: 1.6em;
+    font-weight: 500;
+    clear: both;
+    margin-bottom: 5px;
+	color: #ed2924;
+}
+h3 {
+	font-weight: 700;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+h4 {
+	font-weight: 600;
+    font-size: 1em;
+    font-style: italic;
+    margin-bottom: 0px;
+}
+a 	{
+	color: #ed2924;
+}
+a:hover {
+    color: #41b6e6;
+}
+li  {
+    margin: 5px 0;
+}
+pre {
+	padding: 20px 10px;
+    background-color: #dadada;
+}
+</style>
+
+<title>Getting started with Jenkins</title>
+</head>
+<body>
+<h1>Getting started with Jenkins</h1>
+<h2>Introduction</h2>
+<p>Jenkins is an open source automation server which enables developers to automate build, test, and deploy their software. For more information go to <a href="https://www.jenkins.io/">Jenkins official site</a>.</p>
+<p>This guide describes the steps needed to build an MPLAB X project on a Jenkins server.</p>
+<h2>Prerequisites</h2>
+<h3>Jenkins server</h3>
+<ul>
+<li>A Jenkins server needs to be available. If you do not have access to one you can set one up yourself by following the <a href="https://www.jenkins.io/doc/book/installing/">Installing Jenkins guide</a>, or you can use the <strong>cicda jenkins-server</strong> command to create a local test server. </li>
+<li>You need to have a user account that allows you to configure a new build job on the Jenkins server</li>
+<li>The Jenkins server needs to have build nodes that supports docker. If not see <a href="https://www.jenkins.io/doc/book/installing/docker/">Jenkins and docker</a></li>
+<li>The Jenkins server must be setup with the following plugins:</li>
+<li><a href="https://plugins.jenkins.io/workflow-aggregator/">workflow-aggregator</a></li>
+<li><a href="https://plugins.jenkins.io/pipeline-utility-steps/">pipeline-utility-steps</a></li>
+<li><a href="https://plugins.jenkins.io/docker-workflow/">docker-workflow</a></li>
+<li><a href="https://plugins.jenkins.io/ws-cleanup/">ws-cleanup</a></li>
+<li><a href="https://plugins.jenkins.io/warnings-ng/">warnings-ng</a></li>
+<li><strong>Note:</strong> Additional plugins may be required for optional build steps. See <a href="#options">Options</a> below for more information.</li>
+</ul>
+<h3>Source control system</h3>
+<ul>
+<li>Your project source code needs to be hosted on a source control system (example: Subversion, CVS or Git) </li>
+<li>The Jenkins server needs to support your source control system and have access to your project repository. </li>
+</ul>
+<h3>MPLAB XC toolchain license server</h3>
+<ul>
+<li>An MPLAB XC license server needs to be configured available on a given address and port. For more information see <a href="https://ww1.microchip.com/downloads/en/DeviceDoc/50002334B.pdf">MPLAB XC License Server Manual</a></li>
+</ul>
+<h2>Step 1 - Generate Jenkinsfiles from the MPLAB X IDE</h2>
+<ul>
+<li>Open your project in the MPLAB X IDE and navigate to <strong><em>_Tools</em>_ -&gt; </strong>CI/CD Assistant____</li>
+<li>Select <strong>Jenkins Pipeline files</strong> as output type</li>
+<li>Step through the assistant wizard and select the <a href="#options">options</a> you need. </li>
+<li>After generation, open the <strong>Files</strong> view and verify that a <em>Jenkinsfile</em> and <em>Dockerfile</em> have been added to your project base folder. 
+  Other files are may also be added depending on the selected options.</li>
+</ul>
+<h2>Step 2 - Add generated files to your repository</h2>
+<ul>
+<li>Use your source control system and add the generated files to your project repository.</li>
+</ul>
+<h2>Step 3 - Configure build job on the Jenkins server</h2>
+<p>This section gives a short summary of how to configure a new build job on a Jenkins server using the generated files. For more details see <a href="https://www.jenkins.io/doc/book/pipeline/jenkinsfile/">Using a Jenkinsfile on Jenkins.io</a></p>
+<p>Short summary:</p>
+<ul>
+<li>Log in to the Jenkins server web interface and select <strong>New Item</strong></li>
+<li>Enter a build job name and select <strong>Pipeline</strong> as project type</li>
+<li>In the new build job configuration, go to the <strong>Pipeline</strong> section and configure:</li>
+<li>Select <strong>Pipeline script from SCM</strong> and configure the source control management (SCM) info required for the Jenkins server to check out your project. This may include <em>repository url</em>, <em>credentials</em> and also <em>branch specifier</em>.</li>
+<li>Specify <em>Jenkinsfile</em> as the <strong>Script Path</strong>. (This needs to match the name of the generated Jenkinsfile.)</li>
+<li>Save the new build job configuration and start a new build job (<strong>Build Now</strong>). </li>
+</ul>
+<p>The result should be a working build pipeline that first sets up a docker build environment before building and analysing the MPLAB X project</p>
+<h2>Options</h2>
+<h3>Network license info</h3>
+<p>Specify the network license info that your automated build job should use. Note that this does not need to
+be the same license server that you are using locally. </p>
+<h3>Doxygen</h3>
+<p>Enable to generate source code documentation using doxygen. 
+Doxygen reads its configuration from a <em>Doxyfile</em>. 
+If no such file exists, a default Doxyfile will be generated for the project.</p>
+<p>For more info on doxygen see <a href="https://github.com/doxygen/doxygen">Doxygen on GitHub</a></p>
+<h3>Simulator</h3>
+<p>Enable to run the binaries on a simulator. This can be used to run unit tests.</p>
+<p>A Microchip Debugger (MDB) script <em>mdb-simulator-script.txt</em> will be added to your project and this is executed
+during the simulator build step.  </p>
+<p>The default script will run the simulator for 10 seconds and capture output and coverage based on your settings.
+To change this, modify the script manually or regenerate using other options.</p>
+<h4>Configuration</h4>
+<p>Specify which configuration should be built and run on the simulator. This can be practical if your 
+project has both a production and a test configuration.</p>
+<h4>Scan output for Unity test results</h4>
+<p>Enable if the configuration builds Unity test runners, 
+and the build job should create a report based on the resulting output.
+For more info on how to write Unity tests see <a href="http://www.throwtheswitch.org/unity">Unity from ThrowTheSwitch.org/</a></p>
+<h4>Capture output from serial communication</h4>
+<p>This option should be used together with the <em>Scan output for Unity test results</em> option. 
+The simulator needs to know from which serial communication module instance to capture the output from.
+The default value is <em>uart1</em>, but this is dependent on which device you are using and how you have configured your test setup.  </p>
+<h4>Enable coverage</h4>
+<p>Enable if the simulation should generate a coverage report.</p>
+<p><strong>Note</strong> that the <a href="https://plugins.jenkins.io/code-coverage-api/">Code Coverage API plugin</a> must be available on your
+Jenkins server if coverage reporting is enabled.</p>
+<h3>MISRA analysis</h3>
+<p>Enable to run a MISRA analysis using cppcheck, and produce a CPPCheck Warnings report for the build job. 
+MISRA analysis required MPLAB X IDE version 5.50 or newer.</p>
+<p><strong>Note</strong> that the <a href="https://plugins.jenkins.io/cppcheck/">Cppcheck plugin</a> must be available on your Jenkins server if
+it is selected for trend reporting.</p>
+<h2>Suggested next steps</h2>
+<p>The <em>Jenkinsfile</em> defines build steps that are run inside a docker image. The docker image is defined by the generated <em>Dockerfile</em> and provides a stable Linux environment where the required XC toolchain, device support and MPLAB X IDE binaries are available.</p>
+<p>You can modify the generated Jenkinsfile by following the <a href="https://www.jenkins.io/doc/book/pipeline/jenkinsfile/">Jenkinsfile documentation</a>.</p>
+<h3>Recommended Jenkins plug-ins</h3>
+<p>Jenkins provides many plug-ins that can improve your build setup. </p>
+<p><strong>Example:</strong> If your Jenkins server has installed the <a href="https://plugins.jenkins.io/warnings-ng/">Warnings Next Generation</a> you use this to parse errors and warning from the build (<em>gcc</em>) and analyze (<em>cppCheck</em>) steps:</p>
+<pre><code>pipeline {
+  stages {
+      // (Build step definitions here)
+  }
+  post {
+    always {
+      recordIssues(tools: [
+        cppCheck(pattern: 'cppcheck-result.xml', reportEncoding: 'ISO-8859-1'),
+        gcc()
+      ])
+    }
+  }
+}
+</code></pre>
+<h3>Gating</h3>
+<p>Once you have a stable build job you can implement a gated commit process where each commit is automatically tested before it is rejected or merged to your main branch. Such a process makes sure that the main branch remains stable even when there are many developers working on the same project.</p>
+<p>Setting up a gated build process can be done in different ways depending on which source code management infrastructure you are using. Here is an example on how to use the <a href="https://plugins.jenkins.io/atlassian-bitbucket-server-integration/">Atlassian Bitbucket integration</a></p>
+<h2>Generating Jenkinsfiles from the command line</h2>
+<p>Jenkinsfiles for a given MPLAB X project can also be generated using the CLI <em>cicda</em>. 
+<em>cicda</em> is available from the MPLAB X IDE installation platform bin folder. </p>
+<p>To generate Jenkinsfiles for a project:</p>
+<pre><code>cicda generate-jenkins [path to MPLAB X project]
+</code></pre>
+<p>To list available options:</p>
+<pre><code>cicda generate-jenkins --help
+</code></pre>
+</body>
+</html>
